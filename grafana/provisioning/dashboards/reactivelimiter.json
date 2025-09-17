@@ -118,9 +118,23 @@
         {
           "editorMode": "code",
           "expr": "(sum by (status) (\n  label_replace(label_replace(rate(cortex_request_duration_seconds_count{container=\"distributor\", route=\"api_v1_push\"}[$__rate_interval]),\n  \"status\", \"${1}xx\", \"status_code\", \"([0-9])..\"),\n  \"status\", \"${1}\", \"status_code\", \"([a-zA-Z]+)\"))\n) ",
+          "hide": true,
           "legendFormat": "__auto",
           "range": true,
           "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus_uid"
+          },
+          "editorMode": "code",
+          "expr": "irate(cortex_distributor_received_requests_total[1m])",
+          "hide": false,
+          "instant": false,
+          "legendFormat": "{{pod}}",
+          "range": true,
+          "refId": "B"
         }
       ],
       "title": "Distributor RPS",
@@ -215,7 +229,7 @@
             "uid": "prometheus_uid"
           },
           "editorMode": "code",
-          "expr": "histogram_quantile(0.5, sum(rate(cortex_request_duration_seconds{container=\"distributor\",route=~\"/distributor.Distributor/Push|/httpgrpc.*|api_(v1|prom)_push|otlp_v1_metrics|api_v1_push_influx_write\"}[1m])))",
+          "expr": "histogram_quantile(0.5, sum(irate(cortex_request_duration_seconds{container=\"distributor\",route=~\"/distributor.Distributor/Push|/httpgrpc.*|api_(v1|prom)_push|otlp_v1_metrics|api_v1_push_influx_write\"}[1m])))*1e3",
           "hide": false,
           "instant": false,
           "legendFormat": "p50",
@@ -228,7 +242,7 @@
             "uid": "prometheus_uid"
           },
           "editorMode": "code",
-          "expr": "histogram_quantile(0.99, sum(rate(cortex_request_duration_seconds{container=\"distributor\",route=~\"/distributor.Distributor/Push|/httpgrpc.*|api_(v1|prom)_push|otlp_v1_metrics|api_v1_push_influx_write\"}[1m])))",
+          "expr": "histogram_quantile(0.99, sum(irate(cortex_request_duration_seconds{container=\"distributor\",route=~\"/distributor.Distributor/Push|/httpgrpc.*|api_(v1|prom)_push|otlp_v1_metrics|api_v1_push_influx_write\"}[1m])))*1e3",
           "hide": false,
           "instant": false,
           "legendFormat": "p99",
@@ -241,7 +255,7 @@
             "uid": "prometheus_uid"
           },
           "editorMode": "code",
-          "expr": "sum(rate(cortex_request_duration_seconds_sum{container=\"distributor\",route=~\"/distributor.Distributor/Push|/httpgrpc.*|api_(v1|prom)_push|otlp_v1_metrics|api_v1_push_influx_write\"}[1m]))\n/\nsum(rate(cortex_request_duration_seconds_count{container=\"distributor\",route=~\"/distributor.Distributor/Push|/httpgrpc.*|api_(v1|prom)_push|otlp_v1_metrics|api_v1_push_influx_write\"}[1m]))",
+          "expr": "sum(irate(cortex_request_duration_seconds_sum{container=\"distributor\",route=~\"/distributor.Distributor/Push|/httpgrpc.*|api_(v1|prom)_push|otlp_v1_metrics|api_v1_push_influx_write\"}[1m]))*1e3\n/\nsum(irate(cortex_request_duration_seconds_count{container=\"distributor\",route=~\"/distributor.Distributor/Push|/httpgrpc.*|api_(v1|prom)_push|otlp_v1_metrics|api_v1_push_influx_write\"}[1m]))*1e3",
           "hide": false,
           "instant": false,
           "legendFormat": "Avg",
@@ -341,7 +355,7 @@
             "uid": "prometheus_uid"
           },
           "editorMode": "code",
-          "expr": "histogram_quantile(0.99, sum by (pod)(rate(cortex_request_duration_seconds{container=\"distributor\",route=~\"/distributor.Distributor/Push|/httpgrpc.*|api_(v1|prom)_push|otlp_v1_metrics|api_v1_push_influx_write\"}[1m])))",
+          "expr": "histogram_quantile(0.99, sum by (pod)(irate(cortex_request_duration_seconds{container=\"distributor\",route=~\"/distributor.Distributor/Push|/httpgrpc.*|api_(v1|prom)_push|otlp_v1_metrics|api_v1_push_influx_write\"}[1m])))*1e3",
           "hide": false,
           "instant": false,
           "legendFormat": "__auto",
